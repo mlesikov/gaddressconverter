@@ -1,1 +1,15 @@
-This file was created by IntelliJ IDEA 12.1.6 for binding GitHub repository
+GAddressConverter
+Address converter :
+ - from string to geo coordinates
+ - from geo coordinaets to address
+
+Uses The Google Geocoding API
+
+https://developers.google.com/maps/documentation/geocoding/?hl=bg&csw=1
+
+
+Google Maps API Coverage
+https://spreadsheets.google.com/pub?key=p9pdwsai2hDMsLkXsoM05KQ&gid=1
+
+Reference:
+http://www.javaroots.com/2013/08/convert-location-lat-long-java.html
