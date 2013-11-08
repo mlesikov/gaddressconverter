@@ -78,33 +78,4 @@ public class AddressConverter {
 
 
   }
-
-
-  public static void main(String[] args) throws IOException {
-
-    GoogleResponse res = new AddressConverter().convertToLatLong("Apollo Bunder,Mumbai ,Maharashtra, India");
-    if (res.getStatus().equals("OK")) {
-      for (Result result : res.getResults()) {
-        System.out.println("Lattitude of address is :" + result.getGeometry().getLocation().getLat());
-        System.out.println("Longitude of address is :" + result.getGeometry().getLocation().getLng());
-        System.out.println("Location is " + result.getGeometry().getLocation_type());
-      }
-    } else {
-      System.out.println(res.getStatus());
-    }
-
-    System.out.println("\n");
-    GoogleResponse res1 = new AddressConverter().convertFromLatLong("18.92038860,72.83013059999999");
-    if (res1.getStatus().equals("OK")) {
-      for (Result result : res1.getResults()) {
-        System.out.println("address is :" + result.getFormatted_address());
-      }
-    } else {
-      System.out.println(res1.getStatus());
-    }
-
-
-  }
-
-
 }
