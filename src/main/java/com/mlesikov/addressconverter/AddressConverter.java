@@ -43,6 +43,7 @@ public class AddressConverter {
             + URLEncoder.encode(fullAddress, "UTF-8") + "&sensor=false");
     // Open the Connection
     URLConnection conn = url.openConnection();
+    conn.setConnectTimeout(60000);
 
     InputStream in = conn.getInputStream();
     ObjectMapper mapper = new ObjectMapper();
@@ -69,6 +70,7 @@ public class AddressConverter {
             + URLEncoder.encode(latlongString, "UTF-8") + "&sensor=false&language=bg");
     // Open the Connection
     URLConnection conn = url.openConnection();
+    conn.setConnectTimeout(60000);
 
     InputStream in = conn.getInputStream();
     ObjectMapper mapper = new ObjectMapper();
