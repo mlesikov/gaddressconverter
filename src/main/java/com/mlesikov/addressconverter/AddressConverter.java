@@ -5,14 +5,17 @@ import org.codehaus.jackson.map.ObjectMapper;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
+import java.util.logging.Logger;
 
 /**
  * @author Mihail Lesikov (mlesikov@gmail.com)
  */
 public class AddressConverter {
+  private static final Logger log = Logger.getLogger(AddressConverter.class.getName());
  /*
   * Geocode request URL. Here see we are passing "json" it means we will get
   * the output in JSON format. You can also pass "xml" instead of "json" for
@@ -42,16 +45,29 @@ public class AddressConverter {
     URL url = new URL(URL + "?address="
             + URLEncoder.encode(fullAddress, "UTF-8") + "&sensor=false");
     // Open the Connection
-    URLConnection conn = url.openConnection();
-    conn.setConnectTimeout(60000);
+    HttpURLConnection httpConn = openHttpConnection(url);
 
-    InputStream in = conn.getInputStream();
+    InputStream in = httpConn.getInputStream();
     ObjectMapper mapper = new ObjectMapper();
     GoogleResponse response = (GoogleResponse) mapper.readValue(in, GoogleResponse.class);
     in.close();
+
+    String responseStats = "response code : " + httpConn.getResponseCode() + "\n" +
+            "response message : " + httpConn.getResponseMessage() + "\n";
+
+    log.info(responseStats);
+
     return response;
 
 
+  }
+
+  private HttpURLConnection openHttpConnection(URL url) throws IOException {
+    URLConnection conn = url.openConnection();
+    conn.setReadTimeout(10000);
+    conn.setConnectTimeout(10000);
+    HttpURLConnection httpConn = (HttpURLConnection) conn;
+    return httpConn;
   }
 
   public GoogleResponse convertFromLatLong(String latlongString) throws IOException {
@@ -69,13 +85,17 @@ public class AddressConverter {
     URL url = new URL(URL + "?latlng="
             + URLEncoder.encode(latlongString, "UTF-8") + "&sensor=false&language=bg");
     // Open the Connection
-    URLConnection conn = url.openConnection();
-    conn.setConnectTimeout(60000);
+    HttpURLConnection httpConn = openHttpConnection(url);
 
-    InputStream in = conn.getInputStream();
+    InputStream in = httpConn.getInputStream();
     ObjectMapper mapper = new ObjectMapper();
     GoogleResponse response = (GoogleResponse) mapper.readValue(in, GoogleResponse.class);
     in.close();
+
+    String responseStats = "response code : " + httpConn.getResponseCode() + "\n" +
+            "response message : " + httpConn.getResponseMessage() + "\n";
+
+    log.info(responseStats);
     return response;
 
 
