@@ -23,6 +23,8 @@ public class Result {
  @JsonIgnore
  private Object types;
 
+ public String place_id;
+
  public String getFormatted_address() {
   return formatted_address;
  }

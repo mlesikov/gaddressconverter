@@ -1,5 +1,7 @@
 package com.mlesikov.addressconverter;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
+
 /**
  *
  *
@@ -11,6 +13,9 @@ public class GoogleResponse {
 
  private Result[] results ;
  private String status = "";
+ @JsonIgnore
+ public Object error_message = "";
+
  public Result[] getResults() {
   return results;
  }
@@ -23,6 +28,8 @@ public class GoogleResponse {
  public void setStatus(String status) {
   this.status = status;
  }
+
+
 
 
 }
