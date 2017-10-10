@@ -3,10 +3,15 @@ package com.mlesikov.addressconverter;
 
 import com.google.common.collect.Lists;
 import com.mlesikov.addressconverter.pont.Point;
+import com.opencsv.CSVReader;
+import com.opencsv.CSVWriter;
 import org.junit.Test;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
@@ -16,10 +21,41 @@ import java.util.Scanner;
 public class AddressConverterTest {
 
 
+//  @Test
+  public void mainTest() throws IOException {
+    //  public static void main(String[] args) throws IOException {
+
+    GoogleResponse res = new AddressConverter().convertToLatLong("Apollo Bunder,Mumbai ,Maharashtra, India");
+    if (res.getStatus().equals("OK")) {
+      for (Result result : res.getResults()) {
+        System.out.println("Lattitude of address is :" + result.getGeometry().getLocation().getLat());
+        System.out.println("Longitude of address is :" + result.getGeometry().getLocation().getLng());
+        System.out.println("Location is " + result.getGeometry().getLocation_type());
+      }
+    } else {
+      System.out.println(res.getStatus());
+    }
+
+    System.out.println("\n");
+    GoogleResponse res1 = new AddressConverter().convertFromLatLong("18.92038860,72.83013059999999");
+    if (res1.getStatus().equals("OK")) {
+      for (Result result : res1.getResults()) {
+        System.out.println("address is :" + result.getFormatted_address());
+      }
+    } else {
+      System.out.println(res1.getStatus());
+    }
+  }
+
+
   @Test
   public void singleAddress() throws Exception {
 
-    GoogleResponse res = new AddressConverter().convertToLatLong("България, Стара Загора, Гурко 24");
+//    GoogleResponse res = new AddressConverter().convertToLatLong("България, Стара Загора, Гурко 24");
+//    GoogleResponse res = new AddressConverter().convertToLatLong("4245 Балкан махала, България");
+//    GoogleResponse res = new AddressConverter().convertToLatLong("7000 Русе, България");
+//    GoogleResponse res = new AddressConverter().convertToLatLong("5140 ЛЯСКОВЕЦ, България");
+    GoogleResponse res = new AddressConverter().convertToLatLong("гр. Елена , България");
 
     String lonlat = "";
     if (res.getStatus().equals("OK")) {
@@ -29,6 +65,10 @@ public class AddressConverterTest {
         lonlat = result.getGeometry().getLocation().getLat() + "," + result.getGeometry().getLocation().getLng();
         System.out.println("LlatlongString : " + lonlat);
         System.out.println("Location is " + result.getGeometry().getLocation_type());
+
+
+//        System.out.println(Double.parseDouble( result.getGeometry().getLocation().getLat()));
+        System.out.println( result.getGeometry().getLocation().getLat());
       }
     } else {
       System.out.println(res.getStatus());
@@ -43,10 +83,12 @@ public class AddressConverterTest {
     } else {
       System.out.println(res1.getStatus());
     }
+
+
   }
 
   //  1. Стара Загора, ул.Поп Минчо Кънчев 84 ет.3 ап.7  | 23.2342344234 | 23.342342342 | in coverage / out of in coverage
-  @Test
+//  @Test
   public void checkAddressesFromFile() throws Exception {
     Scanner scanner = new Scanner(this.getClass().getResourceAsStream("test.txt"));
 //    FileWriter fstream = new FileWriter("sz addresses_0_8000.txt");
@@ -95,7 +137,8 @@ public class AddressConverterTest {
 
           String row = address + " | " + lonlat;
 
-          if (new Point(Double.parseDouble(result.getGeometry().getLocation().getLat()), Double.parseDouble(result.getGeometry().getLocation().getLng())).isInPolygon(staraZagoraCoverage)) {
+//          if (new Point(Double.parseDouble(result.getGeometry().getLocation().getLat()), Double.parseDouble(result.getGeometry().getLocation().getLng())).isInPolygon(staraZagoraCoverage)) {
+          if (new Point(result.getGeometry().getLocation().getLat(), result.getGeometry().getLocation().getLng()).isInPolygon(staraZagoraCoverage)) {
             row = row + "| in coverage";
           } else {
             row = row + "| out of coverage";
@@ -260,6 +303,170 @@ public class AddressConverterTest {
     }
 
     out.close();
+  }
+
+//  @Test
+//  public void testCsvRead() throws Exception {
+////    CSVReader reader = new CSVReader(new FileReader("thezone addresses.csv"));
+//    CSVReader reader = new CSVReader(new InputStreamReader(this.getClass().getResourceAsStream("thezone addresses.csv")));
+//                  String[] line;
+//                  while ((line = reader.readNext()) != null) {
+//                      System.out.println("Country [id= " + line[0] + ", code= " + line[1] + " , name=" + line[2] + "]");
+//                  }
+//  }
+//
+//  @Test
+//  public void fixCsv() throws Exception {
+////    CSVReader reader = new CSVReader(new FileReader("thezone addresses.csv"));
+//    CSVWriter csvWriter = new CSVWriter(new FileWriter("located_addresses.csv", true));
+//    CSVReader reader = new CSVReader(new InputStreamReader(this.getClass().getResourceAsStream("raw-located–addresses.csv")));
+//    String[] line;
+//    while ((line = reader.readNext()) != null) {
+//                    System.out.println("Country [id= " + line[0] + ", code= " + line[1] + " , name=" + line[2] + "]");
+//                    if(line.length < 6){
+//                        List<String> newLine = Lists.newArrayList(Arrays.asList(line));
+//                        newLine.add("");
+//                        line =newLine.toArray(new String[newLine.size()]);
+//                      System.err.println("fix");
+//                      }
+//                    csvWriter.writeNext(line);
+//                  }
+//
+//    try {
+//            csvWriter.close();
+//          } catch (IOException e) {
+//            e.printStackTrace();
+//          }
+//  }
+
+// @Test
+//  public void filterMistakes() throws Exception {
+////    CSVReader reader = new CSVReader(new FileReader("thezone addresses.csv"));
+//    CSVWriter csvWriter = new CSVWriter(new FileWriter("goelocated-addresses.csv", true));
+//    CSVReader reader = new CSVReader(new InputStreamReader(this.getClass().getResourceAsStream("located_addresses.csv")));
+//    String[] line;
+//    while ((line = reader.readNext()) != null) {
+//                    System.out.println("Country [id= " + line[0] + ", code= " + line[1] + " , name=" + line[2] + "]");
+////                    if(line[4].contains("0.0")
+////                            || line[5].toLowerCase().contains("Ямбол".toLowerCase())
+////                            || line[5].toLowerCase().contains("София".toLowerCase())
+////                            || line[5].toLowerCase().contains("Търговище".toLowerCase())
+////                            ){
+//
+//      if (!line[4].contains("0.0")
+//              && !line[5].toLowerCase().contains("Ямбол".toLowerCase())
+//              && !line[5].toLowerCase().contains("София".toLowerCase())
+//              && !line[5].toLowerCase().contains("Търговище".toLowerCase())
+//              ) {
+//                      csvWriter.writeNext(line);
+//                    }
+//                  }
+//
+//   try {
+//         csvWriter.close();
+//       } catch (IOException e) {
+//         e.printStackTrace();
+//       }
+//  }
+
+  //  1. Стара Загора, ул.Поп Минчо Кънчев 84 ет.3 ап.7  | 23.2342344234 | 23.342342342 | in coverage / out of in coverage
+  @Test
+  public void checkAddressesFromCSVFile() throws Exception {
+    CSVWriter csvWriter = new CSVWriter(new FileWriter("located_fiber_customer_addressesv2.csv", true));
+//    CSVReader reader = new CSVReader(new InputStreamReader(this.getClass().getResourceAsStream("thezone addresses.csv")));
+    CSVReader reader = new CSVReader(new InputStreamReader(this.getClass().getResourceAsStream("fiber_customer_addresses.csv")));
+
+    String[] csvrow;
+    while ((csvrow = reader.readNext()) != null) {
+
+      List<String> line = Lists.newArrayList(Arrays.asList(csvrow));
+
+      String address = line.get(1);
+
+      String escapedAddress = address.replaceAll("бул.", "").replaceAll("ул.", "").replaceAll("кв.", "ж.к. ")
+              .replaceAll("5800", "")
+              .replaceAll("5957", "")
+              .replaceAll("5842", "")
+              .replaceAll("5954", "")
+              .replaceAll("5900", "")
+              .replaceAll("5000", "")
+              .replaceAll("7700", "")
+              .replaceAll("пл", "");
+      if (escapedAddress.contains("ет.")) {
+        escapedAddress = escapedAddress.substring(0, escapedAddress.indexOf("ет."));
+      }
+      if (escapedAddress.contains("вх.")) {
+        escapedAddress = escapedAddress.substring(0, escapedAddress.indexOf("вх."));
+      }
+      if (escapedAddress.contains("ап.")) {
+        escapedAddress = escapedAddress.substring(0, escapedAddress.indexOf("ап."));
+      }
+      if (escapedAddress.contains("/")) {
+        escapedAddress = escapedAddress.substring(0, escapedAddress.indexOf("/"));
+      }
+
+//      String searchAddress = "България, " + escapedAddress.substring(3, escapedAddress.length());
+      escapedAddress = escapedAddress.trim();
+      System.out.println("==========" +escapedAddress);
+
+      GoogleResponse res = new GoogleResponse();
+
+
+      String status = "";
+      while (!("OK").equals(status) && !"ZERO_RESULTS".equals(status)) {
+
+        try {
+          res = new AddressConverter().convertToLatLong(escapedAddress);
+          status = res.getStatus();
+
+          if (!res.getStatus().equals("OK")) {
+            System.err.println(address + " |********  " + res.getStatus());
+          }
+          Thread.sleep(500);
+        } catch (Exception e) {
+          System.out.println("error " + e.getMessage());
+        }
+      }
+
+
+      String lonlat = "";
+
+//      for (Result result : res.getResults()) {
+      if(res.getResults().length >0){
+      Result result  =  res.getResults()[0];
+
+        lonlat = result.getGeometry().getLocation().getLat() + " | " + result.getGeometry().getLocation().getLng();
+
+        line.set(3, result.getGeometry().getLocation().getLat().toString());
+        line.set(4, result.getGeometry().getLocation().getLng().toString());
+
+
+        String row = address + " | " + lonlat;
+
+        GoogleResponse res1 = new AddressConverter().convertFromLatLong(result.getGeometry().getLocation().getLat() + " , " + result.getGeometry().getLocation().getLng());
+
+        if (res1.getStatus().equals("OK") && res1.getResults().length > 0) {
+          System.out.println(row + "|---------------------------| google says : " + res1.getResults()[0].getFormatted_address());
+          line.add(res1.getResults()[0].getFormatted_address());
+          Thread.sleep(50);
+        } else {
+//                System.out.println(res1.getStatus());
+          line.add("");
+        }
+
+      } else {
+        line.add("");
+      }
+
+      csvWriter.writeNext(line.toArray(new String[line.size()]));
+    }
+
+    try {
+      csvWriter.close();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+
   }
 
 }
